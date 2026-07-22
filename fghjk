@@ -1,33 +1,59 @@
-(gpu_env) PS C:\Users\jasho\Downloads\alphagen-ai_2\alphagen-ai> uvicorn app.main:app --reload --port 8000
-INFO:     Will watch for changes in these directories: ['C:\\Users\\jasho\\Downloads\\alphagen-ai_2\\alphagen-ai']
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [52128] using WatchFiles
-INFO:     Started server process [46388]
-INFO:     Waiting for application startup.
-INFO:root:============================================================
-INFO:root:REGISTERED ROUTES:
-INFO:root:  HEAD,GET             /openapi.json
-INFO:root:  HEAD,GET             /docs
-INFO:root:  HEAD,GET             /docs/oauth2-redirect
-INFO:root:  HEAD,GET             /redoc
-INFO:root:  GET                  /
-INFO:root:  GET                  /health
-INFO:root:  POST                 /auth/token
-INFO:root:  POST                 /analyze
-INFO:root:  POST                 /approve/{trace_id}
-INFO:root:  GET                  /portfolio/history
-INFO:root:  GET                  /portfolio/reflexion/{ticker}
-INFO:root:  POST                 /rag/ingest
-INFO:root:  GET                  /metrics
-INFO:root:============================================================
-INFO:     Application startup complete.
-INFO:httpx:HTTP Request: HEAD https://huggingface.co/ProsusAI/finbert/resolve/refs%2Fpr%2F29/model.safetensors "HTTP/1.1 302 Found"
-INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert/commits/refs%2Fpr%2F29 "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert/commits/main "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: HEAD https://huggingface.co/ProsusAI/finbert/resolve/refs%2Fpr%2F29/model.safetensors.index.json "HTTP/1.1 404 Not Found"
-INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert/discussions?p=0 "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: HEAD https://huggingface.co/ProsusAI/finbert/resolve/refs%2Fpr%2F29/model.safetensors "HTTP/1.1 302 Found"
-INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert/commits/refs%2Fpr%2F29 "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: HEAD https://huggingface.co/ProsusAI/finbert/resolve/refs%2Fpr%2F29/model.safetensors.index.json "HTTP/1.1 404 Not Found"
-INFO:httpx:HTTP Request: HEAD https://huggingface.co/ProsusAI/finbert/resolve/refs%2Fpr%2F29/model.safetensors "HTTP/1.1 302 Found"
+ALPHAGEN
+Multi-Agent Trading Desk
+demo · authenticated
+Session
+Username
+demo
+Password
+••••
+ Sign in
+Signed in.
+New Analysis
+Ticker
+MsFT
+Mode
+
+Paper trading
+ Run analysis
+Paper mode auto-approves. Live mode requires explicit human approval after risk checks pass.
+Done.
+Agent Pipeline
+Planner
+↓
+Market Data
+News
+RAG
+Sentiment
+↓
+Validation
+↓
+Technical
+Fundamental
+↓
+ML Model
+↓
+Decision LLM
+Critic
+↓
+Risk
+Approval
+↓
+Order Exec
+Monitoring
+Memory
+MSFT — Recommendation
+—
+CONFIDENCE
+0%
+⚠ market_data_agent failed: MarketDataAgent: all sources failed for MSFT: empty history from yfinance
+⚠ Market data unavailable — aborting workflow (critical dependency).
+Overview
+Technical
+Fundamental
+News & Sentiment
+Risk & Order
+Price History (6mo)
+Reasoning
+No reasons returned.
+Evidence
+No evidence attached.
