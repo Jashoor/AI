@@ -1,56 +1,91 @@
-FP&A Narrative Reporting Copilot
-
-Financial planning teams spend hours converting numbers into executive-ready commentary. This capstone builds a copilot that drafts monthly performance narratives from structured P&L data, highlights the key drivers, and produces a consistent management summary grounded in finance definitions and reporting rules.
+Build a single-agent research copilot using the ReAct (Reason + Act) pattern to answer questions from a local document corpus. The agent must decide when to retrieve evidence, which files to open, what to read, and how to produce a concise final answer with citations.
 
 Objectives
 
-Generate a monthly commentary draft from a P&L dataset (Actual vs Budget and/or Forecast).
-Use tool/function calls to compute variances, % variance, and top drivers.
-Ground explanations using a finance glossary and reporting notes via RAG.
-Provide a Review Mode that flags weak assumptions, missing data, or uncertain claims and asks follow-up questions.
-Produce a final “Leadership Summary” section suitable for monthly reporting packs.
+Implement a ReAct loop (Reason → Act → Observe) that supports multi-step retrieval from a local corpus.
+Build a retrieval pipeline (chunking + embeddings + vector index) for fast evidence lookup.
+Design a small tool set (e.g., search(query), open_file(file), read_chunk(id)) and enforce safe tool usage.
+Generate final answers that include inline citations (e.g., [file:page]) and minimal supporting quotes.
+Evaluate groundedness by comparing a no-tools baseline vs ReAct+tools on a fixed question set.
 Core Concepts & Techniques
 
-LLM prompting and structured prompting for narratives
-Tool/function calling for calculations (variance, drivers, ranking)
-RAG over glossary/policy notes (grounding + consistency)
-Guardrails for uncertainty and “no fabricated numbers” behavior
-Basic evaluation prompts focused on driver correctness and groundedness
+ReAct (Reason + Act) single-agent workflow
+Retrieval-Augmented Generation (RAG) over a local corpus
+Chunking and embeddings for vector search
+Tool/function calling + structured tool outputs
+Guardrails: max steps, timeouts, retry policies, safe tool allow-list
+Evaluation: grounded precision (do citations actually support the claim?) and answer accuracy
 Suggested Tools / Frameworks
 
 Python
-LLM (API-based or local)
-Vector DB (for glossary/policy RAG)
-Agent/orchestration flow (planner → compute → draft → review)
-Simple web UI (optional)
+LLM (API-based or local model)
+Embeddings model (API or open-source)
+Vector database / index (FAISS or Chroma)
+PDF/text parsing utilities
+Jupyter Notebook + minimal CLI (required)
 Data & Resources
 
-You should create or simulate the following:
+You should use a local corpus folder containing ~20–40 documents (PDFs + markdown/text).
+You may use the provided sample dataset pack or create your own.
 
-Monthly P&L CSVs: Actual, Budget, Forecast (account-level)
-Finance glossary document (definitions + narrative rules)
-Accounting/reporting notes (sign conventions, classification guidance)
-Evaluation prompts/test cases for narrative correctness
+Provided (in the ZIP):
+
+/corpus/ (synthetic markdown + PDFs)
+evaluation_questions.csv (20 questions + gold evidence snippets)
+runs_template.csv (standard logging format)
+corpus_manifest.json + README_DATA_PACK.md
 Expected Deliverables
 
-Working prototype that generates:
+Working Prototype (Notebook + CLI)
 
-Variance analysis + top drivers
+Jupyter notebook showing indexing, retrieval, ReAct loop, and evaluation runs
 
-Draft narrative + leadership summary
+CLI script: python react_copilot.py --question "..."
 
-Review Mode output (flags + questions)
+Output includes:
 
-Code repository with README and setup steps
+step-by-step logs (Action + Observation per step)
 
-Technical report (architecture, prompting, evaluation, limitations)
+final answer with citations + minimal quotes
 
-Presentation deck with demo and results
+Evidence-Annotated Answers
+
+Every answer must contain citations such as:
+
+PDFs: [file:page]
+
+Text/Markdown: [file] or [file:line] (line optional)
+
+Evaluation Report (Short)
+
+Compare “LLM-only (no tools)” vs “ReAct + tools” on 20 questions
+
+Report includes at minimum:
+
+grounded precision (citation support rate)
+
+accuracy (manual or rubric-based)
+
+2–3 failure cases and fixes attempted
+
+Presentation Deck (5–7 slides)
+
+Problem + approach
+
+Architecture (tools + retrieval + loop)
+
+Demo workflow
+
+Evaluation results
+
+Failure cases + improvements
 
 Evaluation Criteria
 
-Driver correctness (top deltas match data)
-Groundedness/citations (claims backed by docs/data)
-Narrative quality and consistency (executive readability)
-UX clarity (review + final output flow)
-Safety (no fabricated figures or unsupported business claims)
+ReAct Loop Quality: sensible tool use, step control (max-steps), clear observations
+Retrieval Quality: relevant evidence retrieval, correct file selection, appropriate chunking
+Groundedness & Citations: citations truly support claims; minimal unsupported text
+Answer Quality: concise, correct, well-structured responses
+Engineering Robustness: timeouts, retries, safe tool allow-list, graceful errors
+Evaluation Discipline: clear baseline vs ReAct comparison + logged runs
+Documentation & Presentation: clear repo structure, reproducible runs, strong demo narrative
