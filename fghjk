@@ -1,64 +1,38 @@
-"""JWT authentication + a minimal role-based access control."""
-import bcrypt
-from datetime import datetime, timedelta
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
-from app.config import settings
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
-
-
-def _hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode("utf-8")[:72], bcrypt.gensalt()).decode("utf-8")
-
-
-def _verify_password(password: str, hashed: str) -> bool:
-    return bcrypt.checkpw(password.encode("utf-8")[:72], hashed.encode("utf-8"))
-
-
-_USERS_DB = {
-    settings.DEMO_USERNAME: {
-        "username": settings.DEMO_USERNAME,
-        "hashed_password": _hash_password(settings.DEMO_PASSWORD),
-        "role": "trader",
-    }
-}
-
-
-def authenticate_user(username: str, password: str):
-    user = _USERS_DB.get(username)
-    if not user or not _verify_password(password, user["hashed_password"]):
-        return None
-    return user
-
-
-def create_access_token(data: dict) -> str:
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
-
-
-def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
-        username = payload.get("sub")
-        if username is None or username not in _USERS_DB:
-            raise credentials_exception
-        return _USERS_DB[username]
-    except JWTError:
-        raise credentials_exception
-
-
-def require_role(*roles: str):
-    def _checker(user: dict = Depends(get_current_user)) -> dict:
-        if user["role"] not in roles:
-            raise HTTPException(status_code=403, detail="Insufficient role for this action")
-        return user
-    return _checker
+gpu_env) PS C:\Users\jasho\OneDrive\Desktop\BIA Project> uvicorn app.main:app --reload --port 8000
+INFO:     Will watch for changes in these directories: ['C:\\Users\\jasho\\OneDrive\\Desktop\\BIA Project']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [46500] using WatchFiles
+Process SpawnProcess-1:
+Traceback (most recent call last):
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\multiprocessing\process.py", line 314, in _bootstrap
+    self.run()
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\asyncio\base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\server.py", line 69, in serve
+    await self._serve(sockets)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\server.py", line 76, in _serve
+    config.load()
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\config.py", line 434, in load
+    self.loaded_app = import_from_string(self.app)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\importer.py", line 22, in import_from_string
+    raise exc from None
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\importlib\__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 992, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'app'
