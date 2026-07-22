@@ -1,539 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AlphaGen — Multi-Agent Trading Desk</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-<style>
-  :root{
-    --bg-void:#0b0f14;
-    --bg-panel:#11161d;
-    --bg-panel-raised:#161d26;
-    --line:#232c37;
-    --text-hi:#e9edf1;
-    --text-mid:#9aa7b4;
-    --text-dim:#5b6774;
-    --amber:#e8a33d;
-    --amber-dim:#8a6526;
-    --buy:#3fb950;
-    --sell:#e5484d;
-    --hold:#9aa7b4;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'IBM Plex Sans', sans-serif;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0; background:var(--bg-void); color:var(--text-hi);
-    font-family:var(--sans); -webkit-font-smoothing:antialiased;
-  }
-  ::selection{ background:var(--amber-dim); color:#fff; }
+(gpu_env) PS C:\Users\jasho\Downloads\foodflow-ai\backend> python -m data.generate_mock_data
+Initializing database schema...
+Generating users (120)...
+Generating restaurants (100)...
+Generating drivers (150)...
+Generating coupons (200)...
+Traceback (most recent call last):
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlite3.IntegrityError: UNIQUE constraint failed: coupons.code
 
-  /* ---------- Ticker tape ---------- */
-  .tape{
-    border-bottom:1px solid var(--line); background:#0d1319;
-    overflow:hidden; white-space:nowrap; padding:7px 0;
-  }
-  .tape-inner{ display:inline-block; padding-left:100%; animation: scroll-left 38s linear infinite; }
-  .tape-item{ font-family:var(--mono); font-size:12.5px; color:var(--text-mid); margin-right:42px; }
-  .tape-item b{ color:var(--text-hi); font-weight:600; }
-  .tape-up{ color:var(--buy); } .tape-down{ color:var(--sell); }
-  @keyframes scroll-left{ 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
+The above exception was the direct cause of the following exception:
 
-  /* ---------- Header ---------- */
-  header{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:20px 32px; border-bottom:1px solid var(--line);
-  }
-  .brand{ display:flex; align-items:baseline; gap:10px; }
-  .brand .mark{ font-family:var(--mono); font-weight:700; font-size:20px; letter-spacing:0.5px; }
-  .brand .mark span{ color:var(--amber); }
-  .brand .eyebrow{ font-family:var(--mono); font-size:10.5px; letter-spacing:2.5px; color:var(--text-dim); text-transform:uppercase; }
-  .session{ display:flex; align-items:center; gap:14px; font-family:var(--mono); font-size:12.5px; color:var(--text-mid); }
-  .dot{ width:7px; height:7px; border-radius:50%; background:var(--text-dim); display:inline-block; margin-right:6px; }
-  .dot.live{ background:var(--buy); box-shadow:0 0 8px var(--buy); }
-
-  main{ max-width:1320px; margin:0 auto; padding:28px 32px 80px; display:grid; grid-template-columns:300px 1fr; gap:24px; }
-  @media (max-width: 920px){ main{ grid-template-columns:1fr; } }
-
-  .panel{ background:var(--bg-panel); border:1px solid var(--line); border-radius:10px; padding:20px; }
-  .panel + .panel{ margin-top:20px; }
-  .panel h2{ font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); margin:0 0 16px; font-weight:600; }
-
-  label{ display:block; font-size:12px; color:var(--text-mid); margin-bottom:6px; margin-top:14px; }
-  label:first-of-type{ margin-top:0; }
-  input, select{
-    width:100%; background:var(--bg-panel-raised); border:1px solid var(--line); color:var(--text-hi);
-    padding:10px 12px; border-radius:6px; font-family:var(--mono); font-size:13.5px; outline:none;
-  }
-  input:focus, select:focus{ border-color:var(--amber-dim); }
-  input::placeholder{ color:var(--text-dim); }
-
-  button{
-    font-family:var(--sans); font-weight:600; font-size:13.5px; letter-spacing:0.2px;
-    padding:11px 16px; border-radius:6px; border:1px solid transparent; cursor:pointer; width:100%;
-    transition:filter .15s ease, transform .05s ease;
-  }
-  button:active{ transform:scale(0.98); }
-  .btn-primary{ background:var(--amber); color:#1a1305; margin-top:18px; }
-  .btn-primary:hover{ filter:brightness(1.08); }
-  .btn-primary:disabled{ background:var(--bg-panel-raised); color:var(--text-dim); cursor:not-allowed; }
-  .btn-ghost{ background:transparent; color:var(--text-mid); border-color:var(--line); }
-  .btn-ghost:hover{ color:var(--text-hi); border-color:var(--text-dim); }
-
-  .hint{ font-size:11.5px; color:var(--text-dim); margin-top:8px; line-height:1.5; }
-  .error{ color:var(--sell); font-size:12.5px; margin-top:10px; }
-  .ok{ color:var(--buy); font-size:12.5px; margin-top:10px; }
-
-  /* ---------- Pipeline visualizer ---------- */
-  .pipeline{ display:flex; flex-direction:column; gap:6px; }
-  .pipe-row{ display:flex; gap:6px; }
-  .node{
-    flex:1; font-family:var(--mono); font-size:11px; text-align:center;
-    padding:9px 4px; border-radius:5px; border:1px solid var(--line); color:var(--text-dim);
-    background:var(--bg-panel-raised); transition:all .25s ease; position:relative;
-  }
-  .node.active{ border-color:var(--amber); color:var(--amber); box-shadow:0 0 12px -2px var(--amber-dim); }
-  .node.done{ border-color:#2c4a30; color:var(--buy); background:#10190f; }
-  .node.warn{ border-color:#4a3320; color:var(--amber); background:#191410; }
-  .node.blocked{ border-color:#4a2426; color:var(--sell); background:#190f10; }
-  .flow-arrow{ text-align:center; color:var(--text-dim); font-size:12px; margin:1px 0; }
-
-  /* ---------- Results ---------- */
-  .decision-card{ display:flex; align-items:center; gap:20px; }
-  .rec-badge{
-    font-family:var(--mono); font-weight:700; font-size:26px; padding:10px 22px; border-radius:8px; letter-spacing:1px;
-  }
-  .rec-BUY{ background:#0f2415; color:var(--buy); border:1px solid #1e4a29; }
-  .rec-SELL{ background:#26100f; color:var(--sell); border:1px solid #4a1e1e; }
-  .rec-HOLD{ background:#1a1d21; color:var(--hold); border:1px solid #303841; }
-  .conf-wrap{ flex:1; }
-  .conf-label{ font-size:12px; color:var(--text-mid); margin-bottom:6px; display:flex; justify-content:space-between; font-family:var(--mono); }
-  .conf-bar{ height:8px; background:var(--bg-panel-raised); border-radius:4px; overflow:hidden; }
-  .conf-fill{ height:100%; background:linear-gradient(90deg, var(--amber-dim), var(--amber)); border-radius:4px; transition:width .5s ease; }
-
-  .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-  .grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
-  @media (max-width: 720px){ .grid-2, .grid-4{ grid-template-columns:1fr 1fr; } }
-
-  .metric{ background:var(--bg-panel-raised); border:1px solid var(--line); border-radius:8px; padding:12px 14px; }
-  .metric .k{ font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:5px; }
-  .metric .v{ font-family:var(--mono); font-size:17px; font-weight:600; }
-  .metric .v.pos{ color:var(--buy); } .metric .v.neg{ color:var(--sell); }
-
-  ul.reasons{ list-style:none; padding:0; margin:0; }
-  ul.reasons li{ padding:9px 0; border-bottom:1px solid var(--line); font-size:13.5px; color:var(--text-mid); display:flex; gap:10px; }
-  ul.reasons li:last-child{ border-bottom:none; }
-  ul.reasons li::before{ content:'›'; color:var(--amber); font-weight:700; }
-
-  .evidence-src{ font-family:var(--mono); font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px; }
-
-  .news-item{ padding:10px 0; border-bottom:1px solid var(--line); }
-  .news-item:last-child{ border-bottom:none; }
-  .news-item a{ color:var(--text-hi); text-decoration:none; font-size:13.5px; }
-  .news-item a:hover{ color:var(--amber); }
-  .news-item .src{ font-family:var(--mono); font-size:10.5px; color:var(--text-dim); margin-top:3px; }
-
-  .warn-box{ background:#191410; border:1px solid #4a3320; border-radius:8px; padding:12px 14px; font-size:12.5px; color:var(--amber); margin-top:14px; }
-  .warn-box div{ margin-bottom:4px; } .warn-box div:last-child{ margin-bottom:0; }
-
-  table{ width:100%; border-collapse:collapse; font-size:13px; }
-  th{ text-align:left; font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; padding:8px 10px; border-bottom:1px solid var(--line); }
-  td{ padding:9px 10px; border-bottom:1px solid var(--line); font-family:var(--mono); color:var(--text-mid); }
-  tr:last-child td{ border-bottom:none; }
-
-  .empty{ text-align:center; padding:60px 20px; color:var(--text-dim); }
-  .empty .glyph{ font-size:34px; margin-bottom:14px; color:var(--amber-dim); }
-  .empty h3{ color:var(--text-mid); font-weight:500; margin:0 0 8px; }
-  .empty p{ font-size:13px; max-width:360px; margin:0 auto; line-height:1.6; }
-
-  .tabs{ display:flex; gap:4px; border-bottom:1px solid var(--line); margin-bottom:18px; }
-  .tab{ font-family:var(--mono); font-size:12px; padding:9px 14px; color:var(--text-dim); cursor:pointer; border-bottom:2px solid transparent; }
-  .tab.active{ color:var(--amber); border-bottom-color:var(--amber); }
-
-  canvas{ max-height:220px; }
-  .spinner{ display:inline-block; width:13px; height:13px; border:2px solid var(--bg-panel-raised); border-top-color:var(--amber); border-radius:50%; animation:spin .7s linear infinite; }
-  @keyframes spin{ to{ transform:rotate(360deg); } }
-</style>
-</head>
-<body>
-
-<div class="tape"><div class="tape-inner" id="tape"></div></div>
-
-<header>
-  <div class="brand">
-    <div class="mark">ALPHA<span>GEN</span></div>
-    <div class="eyebrow">Multi-Agent Trading Desk</div>
-  </div>
-  <div class="session" id="sessionInfo">
-    <span><span class="dot"></span>not signed in</span>
-  </div>
-</header>
-
-<main>
-  <!-- LEFT COLUMN -->
-  <div>
-    <div class="panel" id="authPanel">
-      <h2>Session</h2>
-      <label>Username</label>
-      <input id="username" value="demo" />
-      <label>Password</label>
-      <input id="password" type="password" value="demo" />
-      <button class="btn-primary" onclick="login()">Sign in</button>
-      <div id="authMsg"></div>
-    </div>
-
-    <div class="panel" id="queryPanel" style="display:none;">
-      <h2>New Analysis</h2>
-      <label>Ticker</label>
-      <input id="ticker" placeholder="e.g. AAPL" value="AAPL" style="text-transform:uppercase;" />
-      <label>Mode</label>
-      <select id="mode">
-        <option value="paper">Paper trading</option>
-        <option value="live">Live trading</option>
-      </select>
-      <button class="btn-primary" id="runBtn" onclick="runAnalysis()">Run analysis</button>
-      <div class="hint">Paper mode auto-approves. Live mode requires explicit human approval after risk checks pass.</div>
-      <div id="runMsg"></div>
-    </div>
-
-    <div class="panel" id="pipelinePanel" style="display:none;">
-      <h2>Agent Pipeline</h2>
-      <div class="pipeline" id="pipeline"></div>
-    </div>
-  </div>
-
-  <!-- RIGHT COLUMN -->
-  <div>
-    <div class="panel" id="resultsPanel">
-      <div class="empty" id="emptyState">
-        <div class="glyph">◈</div>
-        <h3>No analysis yet</h3>
-        <p>Sign in, enter a ticker, and run the pipeline — technicals, fundamentals, sentiment, ML prediction, and LLM synthesis will land here.</p>
-      </div>
-      <div id="resultsContent" style="display:none;"></div>
-    </div>
-  </div>
-</main>
-
-<script>
-const API = window.location.origin;
-let token = null;
-
-/* ---------------- Ticker tape (cosmetic) ---------------- */
-const tapeTickers = ["AAPL","MSFT","GOOGL","AMZN","NVDA","TSLA","META","JPM","V","XOM"];
-function renderTape(){
-  const el = document.getElementById('tape');
-  let html = '';
-  for (let i=0;i<3;i++){
-    tapeTickers.forEach(t=>{
-      const delta = (Math.random()*4-2);
-      const cls = delta>=0 ? 'tape-up' : 'tape-down';
-      const sign = delta>=0 ? '+' : '';
-      html += `<span class="tape-item"><b>${t}</b> <span class="${cls}">${sign}${delta.toFixed(2)}%</span></span>`;
-    });
-  }
-  el.innerHTML = html;
-}
-renderTape();
-
-/* ---------------- Auth ---------------- */
-async function login(){
-  const u = document.getElementById('username').value;
-  const p = document.getElementById('password').value;
-  const msg = document.getElementById('authMsg');
-  msg.innerHTML = '<span class="hint"><span class="spinner"></span> authenticating…</span>';
-  try{
-    const body = new URLSearchParams({username:u, password:p});
-    const res = await fetch(`${API}/auth/token`, {method:"POST", body});
-    if(!res.ok) throw new Error((await res.json()).detail || 'Login failed');
-    const data = await res.json();
-    token = data.access_token;
-    msg.innerHTML = '<div class="ok">Signed in.</div>';
-    document.getElementById('sessionInfo').innerHTML =
-      `<span><span class="dot live"></span>${u} · authenticated</span>`;
-    document.getElementById('queryPanel').style.display = 'block';
-  }catch(e){
-    msg.innerHTML = `<div class="error">${e.message}</div>`;
-  }
-}
-
-/* ---------------- Pipeline visualization ---------------- */
-const PIPELINE_ROWS = [
-  ["planning_agent"],
-  ["market_data_agent","news_agent","rag_agent","sentiment_agent"],
-  ["data_validation_agent"],
-  ["technical_analysis_agent","fundamental_analysis_agent"],
-  ["ml_prediction_agent"],
-  ["decision_synthesis_agent","critic_agent"],
-  ["risk_agent","human_approval_agent"],
-  ["order_execution_agent","portfolio_monitoring_agent","memory_agent"],
-];
-const LABELS = {
-  planning_agent:"Planner", market_data_agent:"Market Data", news_agent:"News",
-  rag_agent:"RAG", sentiment_agent:"Sentiment", data_validation_agent:"Validation",
-  technical_analysis_agent:"Technical", fundamental_analysis_agent:"Fundamental",
-  ml_prediction_agent:"ML Model", decision_synthesis_agent:"Decision LLM",
-  critic_agent:"Critic", risk_agent:"Risk", human_approval_agent:"Approval",
-  order_execution_agent:"Order Exec", portfolio_monitoring_agent:"Monitoring", memory_agent:"Memory",
-};
-
-function buildPipelineDOM(){
-  const wrap = document.getElementById('pipeline');
-  wrap.innerHTML = '';
-  PIPELINE_ROWS.forEach((row, idx) => {
-    const rowEl = document.createElement('div');
-    rowEl.className = 'pipe-row';
-    row.forEach(name=>{
-      const n = document.createElement('div');
-      n.className = 'node';
-      n.id = `node-${name}`;
-      n.textContent = LABELS[name] || name;
-      rowEl.appendChild(n);
-    });
-    wrap.appendChild(rowEl);
-    if(idx < PIPELINE_ROWS.length - 1){
-      const arrow = document.createElement('div');
-      arrow.className = 'flow-arrow'; arrow.textContent = '↓';
-      wrap.appendChild(arrow);
-    }
-  });
-}
-
-function resetPipeline(){
-  document.querySelectorAll('.node').forEach(n=>{
-    n.className = 'node';
-  });
-}
-
-/* ---------------- Analysis run ---------------- */
-let priceChart = null;
-
-async function runAnalysis(){
-  const ticker = document.getElementById('ticker').value.trim().toUpperCase();
-  const mode = document.getElementById('mode').value;
-  const runMsg = document.getElementById('runMsg');
-  const runBtn = document.getElementById('runBtn');
-  if(!ticker){ runMsg.innerHTML = '<div class="error">Enter a ticker.</div>'; return; }
-  if(!token){ runMsg.innerHTML = '<div class="error">Sign in first.</div>'; return; }
-
-  runBtn.disabled = true;
-  runMsg.innerHTML = '<span class="hint"><span class="spinner"></span> running multi-agent pipeline…</span>';
-  document.getElementById('pipelinePanel').style.display = 'block';
-  buildPipelineDOM();
-  resetPipeline();
-
-  const pipelinePromise = (async()=>{
-    // live sequential glow while the real request is in flight;
-    // reconciled against the real agent_trace once the response lands
-    for(const name of Object.keys(LABELS)){
-      const el = document.getElementById(`node-${name}`);
-      if(el) el.classList.add('active');
-      await new Promise(r=>setTimeout(r, 220));
-    }
-  })();
-
-  try{
-    const res = await fetch(`${API}/analyze`, {
-      method:"POST",
-      headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
-      body: JSON.stringify({ticker, mode}),
-    });
-    const data = await res.json();
-    await pipelinePromise;
-    if(!res.ok) throw new Error(data.detail || 'Analysis failed');
-
-    const ranAgents = (data.agent_trace || []).map(t=>t.agent);
-    resetPipeline(); buildPipelineDOM();
-    Object.keys(LABELS).forEach(name=>{
-      const el = document.getElementById(`node-${name}`);
-      if(!el) return;
-      if(ranAgents.includes(name)) el.classList.add('done');
-    });
-    if(data.risk && !data.risk.passed){
-      const el = document.getElementById('node-risk_agent');
-      if(el){ el.classList.remove('done'); el.classList.add('blocked'); }
-    }
-    if(data.warnings && data.warnings.length){
-      (data.warnings.join(' ').match(/\w+_agent/g)||[]).forEach(a=>{
-        const el = document.getElementById(`node-${a}`);
-        if(el && !el.classList.contains('blocked')){ el.classList.remove('done'); el.classList.add('warn'); }
-      });
-    }
-
-    runMsg.innerHTML = '<div class="ok">Done.</div>';
-    try{
-      renderResults(data);
-    }catch(renderErr){
-      console.error('renderResults failed:', renderErr);
-      runMsg.innerHTML = `<div class="error">Results partially rendered — ${renderErr.message}</div>`;
-    }
-  }catch(e){
-    await pipelinePromise;
-    runMsg.innerHTML = `<div class="error">${e.message}</div>`;
-  }finally{
-    runBtn.disabled = false;
-  }
-}
-
-function fmtPct(v){ return (v===null || v===undefined) ? '—' : `${Number(v).toFixed(2)}%`; }
-function fmtNum(v, d=2){ return (v===null || v===undefined) ? '—' : Number(v).toFixed(d); }
-
-function renderResults(data){
-  document.getElementById('emptyState').style.display = 'none';
-  const el = document.getElementById('resultsContent');
-  el.style.display = 'block';
-
-  const dec = data.decision || {};
-  const risk = data.risk || {};
-  const tech = data.technicals || {};
-  const fund = data.fundamentals || {};
-  const ml = data.ml_prediction || {};
-  const sent = data.sentiment || {};
-  const news = data.news || [];
-  const order = data.order;
-  const warnings = data.warnings || [];
-
-  const recClass = `rec-${dec.recommendation || 'HOLD'}`;
-  const confPct = Math.round((dec.confidence||0)*100);
-
-  el.innerHTML = `
-    <h2>${data.request ? data.request.ticker : ''} — Recommendation</h2>
-    <div class="decision-card">
-      <div class="rec-badge ${recClass}">${dec.recommendation || '—'}</div>
-      <div class="conf-wrap">
-        <div class="conf-label"><span>CONFIDENCE</span><span>${confPct}%</span></div>
-        <div class="conf-bar"><div class="conf-fill" style="width:${confPct}%"></div></div>
-      </div>
-    </div>
-
-    ${warnings.length ? `<div class="warn-box">${warnings.map(w=>`<div>⚠ ${w}</div>`).join('')}</div>` : ''}
-
-    <div class="tabs" id="resultTabs">
-      <div class="tab active" data-tab="overview">Overview</div>
-      <div class="tab" data-tab="technical">Technical</div>
-      <div class="tab" data-tab="fundamental">Fundamental</div>
-      <div class="tab" data-tab="news">News & Sentiment</div>
-      <div class="tab" data-tab="risk">Risk & Order</div>
-    </div>
-
-    <div class="tab-pane" id="pane-overview">
-      <h2 style="margin-top:0;">Price History (6mo)</h2>
-      <canvas id="priceChart"></canvas>
-      <h2>Reasoning</h2>
-      <ul class="reasons">${(dec.reasons||[]).map(r=>`<li>${r}</li>`).join('') || '<li>No reasons returned.</li>'}</ul>
-      <h2>Evidence</h2>
-      ${(dec.evidence||[]).map(e=>`<div style="margin-bottom:10px;"><div class="evidence-src">${e.source}</div><div style="font-size:13.5px;color:var(--text-mid);">${e.detail}</div></div>`).join('') || '<div class="hint">No evidence attached.</div>'}
-    </div>
-
-    <div class="tab-pane" id="pane-technical" style="display:none;">
-      <div class="grid-4">
-        <div class="metric"><div class="k">RSI (14)</div><div class="v">${fmtNum(tech.rsi_14)}</div></div>
-        <div class="metric"><div class="k">MACD Hist.</div><div class="v ${(tech.macd&&tech.macd.histogram>0)?'pos':'neg'}">${fmtNum(tech.macd && tech.macd.histogram)}</div></div>
-        <div class="metric"><div class="k">SMA 20</div><div class="v">${fmtNum(tech.sma_20)}</div></div>
-        <div class="metric"><div class="k">ATR (14)</div><div class="v">${fmtNum(tech.atr_14)}</div></div>
-        <div class="metric"><div class="k">ADX (14)</div><div class="v">${fmtNum(tech.adx_14)}</div></div>
-        <div class="metric"><div class="k">VWAP</div><div class="v">${fmtNum(tech.vwap)}</div></div>
-        <div class="metric"><div class="k">Support</div><div class="v">${fmtNum(tech.support)}</div></div>
-        <div class="metric"><div class="k">Resistance</div><div class="v">${fmtNum(tech.resistance)}</div></div>
-      </div>
-      <div class="hint" style="margin-top:14px;">${tech.signal_summary || ''}</div>
-    </div>
-
-    <div class="tab-pane" id="pane-fundamental" style="display:none;">
-      <div class="grid-4">
-        <div class="metric"><div class="k">ROE</div><div class="v">${fmtPct(fund.roe_pct)}</div></div>
-        <div class="metric"><div class="k">ROCE</div><div class="v">${fmtPct(fund.roce_pct)}</div></div>
-        <div class="metric"><div class="k">D/E</div><div class="v">${fmtNum(fund.debt_equity)}</div></div>
-        <div class="metric"><div class="k">PEG</div><div class="v">${fmtNum(fund.peg_ratio)}</div></div>
-        <div class="metric"><div class="k">EPS Growth</div><div class="v">${fmtPct(fund.eps_growth_pct)}</div></div>
-        <div class="metric"><div class="k">Revenue Growth</div><div class="v">${fmtPct(fund.revenue_growth_pct)}</div></div>
-        <div class="metric"><div class="k">Intrinsic Value</div><div class="v">${fmtNum(fund.intrinsic_value_estimate)}</div></div>
-        <div class="metric"><div class="k">ML P(up)</div><div class="v">${ml.probability_up!=null? Math.round(ml.probability_up*100)+'%':'—'}</div></div>
-      </div>
-      <div class="hint" style="margin-top:14px;">${fund.valuation_note || ''} ${ml.note ? ' · ' + ml.note : ''}</div>
-    </div>
-
-    <div class="tab-pane" id="pane-news" style="display:none;">
-      <div class="metric" style="margin-bottom:16px; display:inline-block;">
-        <div class="k">Overall Sentiment</div>
-        <div class="v ${sent.overall_sentiment==='positive'?'pos':(sent.overall_sentiment==='negative'?'neg':'')}">${sent.overall_sentiment || '—'} (${sent.method||'n/a'})</div>
-      </div>
-      ${news.map(n=>`<div class="news-item"><a href="${n.link}" target="_blank">${n.summary||n.title}</a><div class="src">${n.source} · ${n.published||''}</div></div>`).join('') || '<div class="hint">No news retrieved.</div>'}
-    </div>
-
-    <div class="tab-pane" id="pane-risk" style="display:none;">
-      <div class="grid-4">
-        <div class="metric"><div class="k">Risk Score</div><div class="v">${fmtNum(risk.risk_score)}</div></div>
-        <div class="metric"><div class="k">Position Size</div><div class="v">${fmtPct((risk.position_size_pct||0)*100)}</div></div>
-        <div class="metric"><div class="k">Stop Loss</div><div class="v">${fmtPct(risk.stop_loss_pct)}</div></div>
-        <div class="metric"><div class="k">Risk Passed</div><div class="v ${risk.passed?'pos':'neg'}">${risk.passed ? 'YES' : 'NO'}</div></div>
-      </div>
-      ${(risk.violations||[]).length ? `<div class="warn-box" style="margin-top:14px;">${risk.violations.map(v=>`<div>⚠ ${v}</div>`).join('')}</div>` : ''}
-      <h2 style="margin-top:20px;">Order</h2>
-      ${order ? `
-        <table>
-          <tr><th>Field</th><th>Value</th></tr>
-          <tr><td>Order ID</td><td>${order.order_id}</td></tr>
-          <tr><td>Side</td><td>${order.side}</td></tr>
-          <tr><td>Quantity</td><td>${order.quantity}</td></tr>
-          <tr><td>Fill Price</td><td>${order.price}</td></tr>
-          <tr><td>Status</td><td>${order.status}</td></tr>
-        </table>` : '<div class="hint">No order was placed (HOLD, not approved, or risk-blocked).</div>'}
-    </div>
-  `;
-
-  // tab switching
-  document.querySelectorAll('#resultTabs .tab').forEach(tab=>{
-    tab.addEventListener('click', ()=>{
-      document.querySelectorAll('#resultTabs .tab').forEach(t=>t.classList.remove('active'));
-      document.querySelectorAll('.tab-pane').forEach(p=>p.style.display='none');
-      tab.classList.add('active');
-      document.getElementById(`pane-${tab.dataset.tab}`).style.display = 'block';
-    });
-  });
-
-  // price chart
-  const ohlcv = data.market_data && data.market_data.ohlcv;
-  if(priceChart) { priceChart.destroy(); priceChart = null; }
-  if(ohlcv){
-    if(typeof Chart === 'undefined'){
-      const canvas = document.getElementById('priceChart');
-      if(canvas) canvas.outerHTML = '<div class="hint">Chart library failed to load (CDN blocked?) — numeric results above are unaffected.</div>';
-    } else {
-      try{
-        const ctx = document.getElementById('priceChart');
-        priceChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: ohlcv.dates,
-            datasets: [{
-              data: ohlcv.close,
-              borderColor: '#e8a33d',
-              backgroundColor: 'rgba(232,163,61,0.08)',
-              fill: true,
-              pointRadius: 0,
-              tension: 0.15,
-              borderWidth: 1.5,
-            }]
-          },
-          options: {
-            responsive:true,
-            plugins:{ legend:{ display:false } },
-            scales:{
-              x:{ ticks:{ color:'#5b6774', maxTicksLimit:8, font:{family:'IBM Plex Mono', size:10} }, grid:{ color:'#1a212b' } },
-              y:{ ticks:{ color:'#5b6774', font:{family:'IBM Plex Mono', size:10} }, grid:{ color:'#1a212b' } },
-            }
-          }
-        });
-      }catch(chartErr){
-        console.warn('Chart render failed:', chartErr);
-      }
-    }
-  }
-}
-</script>
-</body>
-</html>
+Traceback (most recent call last):
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "C:\Users\jasho\Downloads\foodflow-ai\backend\data\generate_mock_data.py", line 357, in <module>
+    run()
+  File "C:\Users\jasho\Downloads\foodflow-ai\backend\data\generate_mock_data.py", line 321, in run
+    db.commit()
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\session.py", line 2028, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\session.py", line 4352, in flush
+    self._flush(objects)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\session.py", line 4487, in _flush
+    with util.safe_reraise():
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\session.py", line 4448, in _flush
+    flush_context.execute()
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+    return meth(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed: coupons.code
+[SQL: INSERT INTO coupons (id, code, description, discount_percent, flat_discount, min_order_value, valid_from, valid_until, is_active, usage_limit_per_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ... 6207 characters truncated ... , ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: ('8581ddfc-8b29-4374-be5b-d99c59ce1223', 'FOOD60A', 'Flat discount on your order', 22.0, None, 499.0, '2026-07-15 11:07:37.318639', '2026-10-07 11:07:37.318639', 1, 2, '6489c9d5-543b-4ff1-a0e6-83609b65f5e8', 'FOOD79B', 'New user welcome offer', 25.0, None, 149.0, '2026-06-27 11:07:37.318639', '2026-08-06 11:07:37.318639', 1, 1, '866a1241-1ed4-4bec-a46a-3fe67f3b19ba', 'FOOD65C', 'Percentage off on orders above minimum value', None, 176.0, 199.0, '2026-07-03 11:07:37.318639', '2026-10-13 11:07:37.318639', 1, 2, 'a37a45f4-62e6-4f89-8168-877656b54fb2', 'FOOD51D', 'Flat discount on your order', 35.0, None, 299.0, '2026-07-07 11:07:37.318639', '2026-08-25 11:07:37.318639', 1, 2, 'f2fb4762-37fe-42ac-b117-02193c90fb28', 'FOOD97E', 'Festive season offer', None, 149.0, 0.0, '2026-06-28 11:07:37.318639', '2026-10-14 11:07:37.318639', 1, 1 ... 1900 parameters truncated ... '79e83a9b-7119-4a7a-93ce-bcd1e74e7692', 'FOOD83N', 'Weekend special discount', None, 151.0, 499.0, '2026-07-13 11:07:37.318639', '2026-09-19 11:07:37.318639', 1, 3, 'ae76002f-3149-4e72-abaf-58bf8676e143', 'FOOD58O', 'Percentage off on orders above minimum value', None, 58.0, 0.0, '2026-07-16 11:07:37.318639', '2026-08-30 11:07:37.318639', 1, 1, '39cc873a-7df7-4102-b34d-75b78801ed03', 'FOOD97P', 'New user welcome offer', 16.0, None, 0.0, '2026-06-30 11:07:37.318639', '2026-09-02 11:07:37.318639', 1, 3, '388c1997-6141-487c-bf8d-535687fcd643', 'FOOD67Q', 'Flat discount on your order', None, 142.0, 499.0, '2026-06-25 11:07:37.318639', '2026-08-24 11:07:37.318639', 1, 3, '29f86117-548c-4de5-8168-19f221034b9e', 'FOOD75R', 'New user welcome offer', None, 154.0, 0.0, '2026-06-23 11:07:37.318639', '2026-09-13 11:07:37.318639', 1, 1)]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
