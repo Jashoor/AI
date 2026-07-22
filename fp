@@ -1,91 +1,102 @@
-Build a single-agent research copilot using the ReAct (Reason + Act) pattern to answer questions from a local document corpus. The agent must decide when to retrieve evidence, which files to open, what to read, and how to produce a concise final answer with citations.
+E-commerce platforms receive large volumes of queries about orders, returns, payments, and policies. Human agents alone are slow and costly to scale. You will build an AI assistant that can resolve common issues autonomously using LLMs, RAG, and simple tool calls, with clear fallbacks when it cannot help.
 
 Objectives
 
-Implement a ReAct loop (Reason → Act → Observe) that supports multi-step retrieval from a local corpus.
-Build a retrieval pipeline (chunking + embeddings + vector index) for fast evidence lookup.
-Design a small tool set (e.g., search(query), open_file(file), read_chunk(id)) and enforce safe tool usage.
-Generate final answers that include inline citations (e.g., [file:page]) and minimal supporting quotes.
-Evaluate groundedness by comparing a no-tools baseline vs ReAct+tools on a fixed question set.
+Identify and scope key customer issue types (orders, returns, payments, FAQs).
+Design conversation flows, including clarification, fallback, and escalation.
+Implement an LLM-based assistant with RAG over FAQs/policies.
+Integrate simple “tools” (mock APIs) for order status, returns, refunds.
+Evaluate accuracy, usefulness, and safety, and iterate on prompts and flows.
 Core Concepts & Techniques
 
-ReAct (Reason + Act) single-agent workflow
-Retrieval-Augmented Generation (RAG) over a local corpus
-Chunking and embeddings for vector search
-Tool/function calling + structured tool outputs
-Guardrails: max steps, timeouts, retry policies, safe tool allow-list
-Evaluation: grounded precision (do citations actually support the claim?) and answer accuracy
+Large Language Models (LLMs) via API or open-source.
+Prompt engineering and system prompting for role, tone, and guardrails.
+RAG with embeddings + vector database over help-center docs.
+Agentic logic and tool / function calling (mock order/returns APIs).
+Basic evaluation of responses (relevance, hallucinations, safe handling).
+Simple deployment / UI for interactive demo.
 Suggested Tools / Frameworks
 
-Python
-LLM (API-based or local model)
-Embeddings model (API or open-source)
-Vector database / index (FAISS or Chroma)
-PDF/text parsing utilities
-Jupyter Notebook + minimal CLI (required)
+Backend & Language: Python
+LLM: Any LLM via API or open-source model
+Vector Store: Any vector database or embedding-based store
+Orchestration / Agent Layer: Generic LLM orchestration / agent framework
+UI (recommended): Simple web UI using a web framework + basic frontend
+Storage: JSON/CSV or simple DB for synthetic queries and logs
 Data & Resources
 
-You should use a local corpus folder containing ~20–40 documents (PDFs + markdown/text).
-You may use the provided sample dataset pack or create your own.
+Knowledge Base:
 
-Provided (in the ZIP):
+Synthetic or curated e-commerce FAQs, policies, shipping/return rules, and sample product descriptions (PDF/text/Markdown).
 
-/corpus/ (synthetic markdown + PDFs)
-evaluation_questions.csv (20 questions + gold evidence snippets)
-runs_template.csv (standard logging format)
-corpus_manifest.json + README_DATA_PACK.md
+Customer Query Data (Synthetic):
+
+Self-created or LLM-generated queries (e.g., “Where is my order?”, “I want a refund”) labeled with intents.
+
+Mock Backend “Tools”:
+
+Functions or endpoints such as:
+
+get_order_status(order_id)
+
+create_return_request(order_id, reason)
+
+get_refund_policy()
+
 Expected Deliverables
 
-Working Prototype (Notebook + CLI)
+Working Prototype / MVP
 
-Jupyter notebook showing indexing, retrieval, ReAct loop, and evaluation runs
+Interactive chatbot (web or CLI) that:
 
-CLI script: python react_copilot.py --question "..."
+Handles core customer intents
 
-Output includes:
+Uses RAG for policy/FAQ answers
 
-step-by-step logs (Action + Observation per step)
+Calls at least 2–3 mock tools (order status, returns, refunds)
 
-final answer with citations + minimal quotes
+Has clear fallback / “escalate to human” behavior.
 
-Evidence-Annotated Answers
+Code Repository
 
-Every answer must contain citations such as:
+Organized codebase with clear structure.
 
-PDFs: [file:page]
+README with setup, configuration, and run instructions.
 
-Text/Markdown: [file] or [file:line] (line optional)
+Technical Report
 
-Evaluation Report (Short)
+Problem scope and assumptions.
 
-Compare “LLM-only (no tools)” vs “ReAct + tools” on 20 questions
+Architecture and data pipeline.
 
-Report includes at minimum:
+Prompt and agent design.
 
-grounded precision (citation support rate)
+Evaluation method and results.
 
-accuracy (manual or rubric-based)
+Limitations and future improvements.
 
-2–3 failure cases and fixes attempted
+Presentation Deck
 
-Presentation Deck (5–7 slides)
+Problem, user persona, and use-cases.
 
-Problem + approach
+System design and demo flow.
 
-Architecture (tools + retrieval + loop)
+Key technical decisions.
 
-Demo workflow
+Evaluation summary and roadmap.
 
-Evaluation results
+Supporting Files
 
-Failure cases + improvements
+Synthetic data (queries, FAQs/policies).
+
+Sample conversation logs for evaluation.
 
 Evaluation Criteria
 
-ReAct Loop Quality: sensible tool use, step control (max-steps), clear observations
-Retrieval Quality: relevant evidence retrieval, correct file selection, appropriate chunking
-Groundedness & Citations: citations truly support claims; minimal unsupported text
-Answer Quality: concise, correct, well-structured responses
-Engineering Robustness: timeouts, retries, safe tool allow-list, graceful errors
-Evaluation Discipline: clear baseline vs ReAct comparison + logged runs
-Documentation & Presentation: clear repo structure, reproducible runs, strong demo narrative
+Problem Understanding & Scope: Clear definition of supported queries and limitations.
+Technical Implementation: Correct integration of LLM, RAG, and tool calling; robust flows.
+Use of GIAI Concepts: Effective use of prompts, embeddings, vector search, and basic agentic logic.
+Usability & Practicality: Clarity, helpfulness, and realistic support behavior.
+Code & Documentation Quality: Clean structure, readable code, and clear explanations.
+Presentation: Clear story, demo, and reflection on choices and trade-offs.
+Safety & Ethics: Handling of sensitive topics, reduced hallucinations, honest uncertainty.
