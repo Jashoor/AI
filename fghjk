@@ -1,22 +1,7 @@
-(gpu_env) PS C:\Users\jasho\Downloads\foodflow-ai\backend> pip show langchain langchain-core
-Name: langchain
-Version: 0.3.7
-Summary: Building applications with LLMs through composability
-Home-page: https://github.com/langchain-ai/langchain
-Author: 
-Author-email: 
-License: MIT
-Location: c:\users\jasho\anaconda3\envs\gpu_env\lib\site-packages
-Requires: aiohttp, async-timeout, langchain-core, langchain-text-splitters, langsmith, numpy, pydantic, PyYAML, requests, SQLAlchemy, tenacity
-Required-by: 
----
-Name: langchain-core
-Version: 0.3.63
-Summary: Building applications with LLMs through composability
-Home-page: 
-Author: 
-Author-email: 
-License: MIT
-Location: c:\users\jasho\anaconda3\envs\gpu_env\lib\site-packages
-Requires: jsonpatch, langsmith, packaging, pydantic, PyYAML, tenacity, typing-extensions
-Required-by: langchain, langchain-classic, langchain-community, langchain-google-genai, langchain-huggingface, langchain-text-splitters, langgraph, langgraph-checkpoint, langgraph-prebuilt
+cd backend
+Remove-Item .\data\foodflow.db -ErrorAction SilentlyContinue
+pip install -r requirements.txt
+pip uninstall passlib bcrypt -y    # no longer needed, safe to remove
+python -m data.generate_mock_data
+python -m app.rag.build_index
+uvicorn app.main:app --reload --port 8000
