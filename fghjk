@@ -10,13 +10,13 @@ Password
 Signed in.
 New Analysis
 Ticker
-MsFT
+MSFT
 Mode
 
 Paper trading
  Run analysis
 Paper mode auto-approves. Live mode requires explicit human approval after risk checks pass.
-Done.
+Chart is not defined
 Agent Pipeline
 Planner
 ↓
@@ -42,18 +42,25 @@ Order Exec
 Monitoring
 Memory
 MSFT — Recommendation
-—
+HOLD
 CONFIDENCE
-0%
-⚠ market_data_agent failed: MarketDataAgent: all sources failed for MSFT: empty history from yfinance
-⚠ Market data unavailable — aborting workflow (critical dependency).
+30%
+⚠ Critic rejected decision (attempt 1): ['The confidence (0.65) provided is not fully justified by the evidence strength given that there are no strong technical indicators or historical price movements listed in the evidence.', "There seems to be a contradiction between 'Strong recent news (News): Prediction of parabolic price movement after July 29.' and ML Prediction: '40.9% chance in next 5 days'. These predictions appear contradictory as they suggest different time horizons for potential outcomes.", 'The reasons provided do not directly trace to the evidence given. The technical indicators and news details are listed under supporting data, but there is no direct link to the ML prediction provided.']
+⚠ Critic rejected decision (attempt 2): ['The reasons provided (MACD bullish crossover, Supertrend indicator at 433.5799) are supported by evidence from the Technicals section, which is consistent.', 'However, there are no supporting details for the ML Prediction reason regarding the probability of upward move being only 40.9%. The confidence should be reconsidered given this lack of detail and support.', 'The reasons provided do not contradict each other.']
+⚠ Critic rejected decision (attempt 3): ['The confidence level (0.68) is not fully justified given the evidence strength.', 'There are conflicting pieces of evidence: the MACD bullish crossover from TECHNICALS and the probability of upward move from ML PREDICTION do not directly align with each other in terms of their nature or direction.', "The reasons provided ('Bullish MACD crossover (Signal Summary)', 'Supertrend indicates upward momentum (Technical Indicators)', 'Higher probability of upward move from ML prediction') are not fully substantiated by the evidence. The evidence provided for the reasons is fragmented and does not cover all aspects mentioned in the reasons.", "The evidence sources ('TECHNICALS', 'ML PREDICTION') do not directly map to the reasons provided, making it unclear how these pieces of evidence support each specific reason."]
+⚠ Critic did not approve after max retries — defaulting to HOLD for safety
 Overview
 Technical
 Fundamental
 News & Sentiment
 Risk & Order
-Price History (6mo)
-Reasoning
-No reasons returned.
-Evidence
-No evidence attached.
+Risk Score
+0.09
+Position Size
+10.00%
+Stop Loss
+4.39%
+Risk Passed
+YES
+Order
+No order was placed (HOLD, not approved, or risk-blocked).
