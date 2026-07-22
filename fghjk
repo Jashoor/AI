@@ -1,77 +1,16 @@
-default
-
-
-GET
-/health
-Health
-
-Parameters
-Try it out
-No parameters
-
-Responses
-Code	Description	Links
-200	
-Successful Response
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-"string"
-No links
-
-POST
-/auth/token
-Login
-
-
-POST
-/analyze
-Analyze
-
-
-
-POST
-/approve/{trace_id}
-Approve
-
-
-
-GET
-/portfolio/history
-Portfolio History
-
-
-
-GET
-/portfolio/reflexion/{ticker}
-Reflexion History
-
-
-
-POST
-/rag/ingest
-Ingest Document
-
-
-
-GET
-/metrics
-Metrics
-
-
-Schemas
-AnalyzeRequestExpand allobject
-Body_login_auth_token_postExpand allobject
-CriticReviewExpand allobject
-DecisionOutputExpand allobject
-EvidenceItemExpand allobject
-HTTPValidationErrorExpand allobject
-OrderResultExpand allobject
-RecommendationExpand allstring
-RiskAssessmentExpand allobject
-ValidationErrorExpand allobject
-WorkflowStateExpand allobject
+(gpu_env) PS C:\Users\jasho\Downloads\alphagen-ai_1\alphagen-ai> uvicorn app.main:app --reload --port 8000
+INFO:     Will watch for changes in these directories: ['C:\\Users\\jasho\\Downloads\\alphagen-ai_1\\alphagen-ai']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [53332] using WatchFiles
+INFO:     Started server process [40660]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert/commits/refs%2Fpr%2F29 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert/commits/main "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/ProsusAI/finbert/resolve/refs%2Fpr%2F29/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert/discussions?p=0 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/ProsusAI/finbert/resolve/refs%2Fpr%2F29/model.safetensors "HTTP/1.1 302 Found"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert/commits/refs%2Fpr%2F29 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/ProsusAI/finbert/resolve/refs%2Fpr%2F29/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/ProsusAI/finbert/resolve/refs%2Fpr%2F29/model.safetensors "HTTP/1.1 302 Found"
