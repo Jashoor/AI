@@ -1,8 +1,9 @@
-(gpu_env) PS C:\Users\jasho\Downloads\alphagen-ai_1\alphagen-ai> uvicorn app.main:app --reload --port 8000
-INFO:     Will watch for changes in these directories: ['C:\\Users\\jasho\\Downloads\\alphagen-ai_1\\alphagen-ai']
+(gpu_env) PS C:\Users\jasho\Downloads\alphagen-ai_2\alphagen-ai> uvicorn app.main:app --reload --port 8000
+INFO:     Will watch for changes in these directories: ['C:\\Users\\jasho\\Downloads\\alphagen-ai_2\\alphagen-ai']
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [53332] using WatchFiles
-INFO:     Started server process [40660]
+INFO:     Started reloader process [39340] using WatchFiles
+INFO:     Started server process [30188]
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert/discussions?p=0 "HTTP/1.1 200 OK"
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert "HTTP/1.1 200 OK"
