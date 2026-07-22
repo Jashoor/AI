@@ -1,20 +1,168 @@
-(gpu_env) PS C:\Users\jasho\Downloads\foodflow-ai\frontend> npm run dev                 
+(gpu_env) PS C:\Users\jasho\Downloads\foodflow-ai\backend> uvicorn app.main:app --reload --port 8001
+INFO:     Will watch for changes in these directories: ['C:\\Users\\jasho\\Downloads\\foodflow-ai\\backend']
+INFO:     Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [52404] using WatchFiles
+INFO:     Started server process [10016]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:64491 - "POST /api/v1/auth/guest HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64493 - "GET /api/v1/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64499 - "POST /api/v1/chat HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+  + Exception Group Traceback (most recent call last):
+  |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\_utils.py", line 77, in collapse_excgroups
+  |     yield
+  |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\base.py", line 186, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\anyio\_backends\_asyncio.py", line 783, in __aexit__
+  |     raise BaseExceptionGroup(
+  | exceptiongroup.ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 401, in run_asgi
+    |     result = await app(  # type: ignore[func-returns-value]
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 70, in __call__
+    |     return await self.app(scope, receive, send)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    |     await super().__call__(scope, receive, send)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\applications.py", line 113, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    |     raise exc
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    |     await self.app(scope, receive, _send)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\base.py", line 185, in __call__
+    |     with collapse_excgroups():
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\contextlib.py", line 153, in __exit__
+    |     self.gen.throw(typ, value, traceback)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\_utils.py", line 83, in collapse_excgroups
+    |     raise exc
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\base.py", line 187, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |   File "C:\Users\jasho\Downloads\foodflow-ai\backend\app\main.py", line 59, in rate_limit_middleware
+    |     response = await call_next(request)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\base.py", line 163, in call_next
+    |     raise app_exc
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\base.py", line 149, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    |     await self.simple_response(scope, receive, send, request_headers=headers)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    |     await self.app(scope, receive, send)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\_exception_handler.py", line 62, in wrapped_app
+    |     raise exc
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\_exception_handler.py", line 51, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\routing.py", line 715, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\routing.py", line 735, in app
+    |     await route.handle(scope, receive, send)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\routing.py", line 288, in handle
+    |     await self.app(scope, receive, send)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\routing.py", line 76, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\_exception_handler.py", line 62, in wrapped_app
+    |     raise exc
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\_exception_handler.py", line 51, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\routing.py", line 73, in app
+    |     response = await f(request)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\fastapi\routing.py", line 301, in app
+    |     raw_response = await run_endpoint_function(
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\fastapi\routing.py", line 212, in run_endpoint_function
+    |     return await dependant.call(**values)
+    |   File "C:\Users\jasho\Downloads\foodflow-ai\backend\app\api\routes\chat.py", line 50, in chat
+    |     final_state = await graph.ainvoke(initial_state)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\langgraph\pregel\__init__.py", line 1613, in ainvoke
+    |     async for chunk in self.astream(
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\langgraph\pregel\__init__.py", line 1420, in astream
+    |     callback_manager = get_async_callback_manager_for_config(config)
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\langchain_core\runnables\config.py", line 469, in get_async_callback_manager_for_config
+    |     return AsyncCallbackManager.configure(
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\langchain_core\callbacks\manager.py", line 2049, in configure
+    |     return _configure(
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\langchain_core\callbacks\manager.py", line 2308, in _configure
+    |     debug = _get_debug()
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\langchain_core\callbacks\manager.py", line 53, in _get_debug
+    |     return get_debug()
+    |   File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\langchain_core\globals.py", line 146, in get_debug
+    |     old_debug = langchain.debug
+    | AttributeError: module 'langchain' has no attribute 'debug'
+    +------------------------------------
 
-> foodflow-ai-frontend@1.0.0 dev
-> vite
+During handling of the above exception, another exception occurred:
 
-Re-optimizing dependencies because lockfile has changed
-
-  VITE v5.4.21  ready in 606 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-  ➜  press h + enter to show help
-5:18:09 pm [vite] http proxy error: /api/v1/auth/guest
-AggregateError [ECONNREFUSED]: 
-    at internalConnectMultiple (node:net:1139:18)
-    at afterConnectMultiple (node:net:1712:7)
-5:18:38 pm [vite] http proxy error: /api/v1/auth/signup
-AggregateError [ECONNREFUSED]: 
-    at internalConnectMultiple (node:net:1139:18)
-    at afterConnectMultiple (node:net:1712:7)
+Traceback (most recent call last):
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 401, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\base.py", line 185, in __call__
+    with collapse_excgroups():
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\contextlib.py", line 153, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\_utils.py", line 83, in collapse_excgroups
+    raise exc
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\base.py", line 187, in __call__
+    response = await self.dispatch_func(request, call_next)
+  File "C:\Users\jasho\Downloads\foodflow-ai\backend\app\main.py", line 59, in rate_limit_middleware
+    response = await call_next(request)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\base.py", line 163, in call_next
+    raise app_exc
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\base.py", line 149, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\_exception_handler.py", line 62, in wrapped_app
+    raise exc
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\_exception_handler.py", line 51, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\_exception_handler.py", line 62, in wrapped_app
+    raise exc
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\_exception_handler.py", line 51, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\fastapi\routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\Users\jasho\Downloads\foodflow-ai\backend\app\api\routes\chat.py", line 50, in chat
+    final_state = await graph.ainvoke(initial_state)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\langgraph\pregel\__init__.py", line 1613, in ainvoke
+    async for chunk in self.astream(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\langgraph\pregel\__init__.py", line 1420, in astream
+    callback_manager = get_async_callback_manager_for_config(config)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\langchain_core\runnables\config.py", line 469, in get_async_callback_manager_for_config
+    return AsyncCallbackManager.configure(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\langchain_core\callbacks\manager.py", line 2049, in configure
+    return _configure(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\langchain_core\callbacks\manager.py", line 2308, in _configure
+    debug = _get_debug()
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\langchain_core\callbacks\manager.py", line 53, in _get_debug
+    return get_debug()
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\langchain_core\globals.py", line 146, in get_debug
+    old_debug = langchain.debug
+AttributeError: module 'langchain' has no attribute 'debug'
