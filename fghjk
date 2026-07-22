@@ -1,72 +1,17 @@
-(gpu_env) PS C:\Users\jasho\Downloads\foodflow-ai\backend> python -m data.generate_mock_data
-Initializing database schema...
-Generating users (120)...
-Generating restaurants (100)...
-Generating drivers (150)...
-Generating coupons (200)...
-Traceback (most recent call last):
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\base.py", line 2118, in _exec_insertmany_context
-    dialect.do_execute(
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
-    cursor.execute(statement, parameters)
-sqlite3.IntegrityError: UNIQUE constraint failed: coupons.code
+COUPON_PREFIXES = ["FOOD", "SAVE", "MEAL", "TASTY", "CRAVE", "YUM", "BITE", "FEAST"]
 
-The above exception was the direct cause of the following exception:
 
-Traceback (most recent call last):
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\runpy.py", line 196, in _run_module_as_main
-    return _run_code(code, main_globals, None,
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\runpy.py", line 86, in _run_code
-    exec(code, run_globals)
-  File "C:\Users\jasho\Downloads\foodflow-ai\backend\data\generate_mock_data.py", line 357, in <module>
-    run()
-  File "C:\Users\jasho\Downloads\foodflow-ai\backend\data\generate_mock_data.py", line 321, in run
-    db.commit()
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\session.py", line 2028, in commit
-    trans.commit(_to_root=True)
-  File "<string>", line 2, in commit
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
-    ret_value = fn(self, *arg, **kw)
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\session.py", line 1313, in commit
-    self._prepare_impl()
-  File "<string>", line 2, in _prepare_impl
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
-    ret_value = fn(self, *arg, **kw)
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\session.py", line 1288, in _prepare_impl
-    self.session.flush()
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\session.py", line 4352, in flush
-    self._flush(objects)
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\session.py", line 4487, in _flush
-    with util.safe_reraise():
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
-    raise exc_value.with_traceback(exc_tb)
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\session.py", line 4448, in _flush
-    flush_context.execute()
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
-    rec.execute(self)
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
-    util.preloaded.orm_persistence.save_obj(
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
-    _emit_insert_statements(
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\orm\persistence.py", line 1143, in _emit_insert_statements
-    result = connection.execute(
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
-    return meth(
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
-    return connection._execute_clauseelement(
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
-    ret = self._execute_context(
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\base.py", line 1844, in _execute_context
-    return self._exec_insertmany_context(dialect, context)
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\base.py", line 2126, in _exec_insertmany_context
-    self._handle_dbapi_exception(
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
-    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\base.py", line 2118, in _exec_insertmany_context
-    dialect.do_execute(
-  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
-    cursor.execute(statement, parameters)
-sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed: coupons.code
-[SQL: INSERT INTO coupons (id, code, description, discount_percent, flat_discount, min_order_value, valid_from, valid_until, is_active, usage_limit_per_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ... 6207 characters truncated ... , ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-[parameters: ('8581ddfc-8b29-4374-be5b-d99c59ce1223', 'FOOD60A', 'Flat discount on your order', 22.0, None, 499.0, '2026-07-15 11:07:37.318639', '2026-10-07 11:07:37.318639', 1, 2, '6489c9d5-543b-4ff1-a0e6-83609b65f5e8', 'FOOD79B', 'New user welcome offer', 25.0, None, 149.0, '2026-06-27 11:07:37.318639', '2026-08-06 11:07:37.318639', 1, 1, '866a1241-1ed4-4bec-a46a-3fe67f3b19ba', 'FOOD65C', 'Percentage off on orders above minimum value', None, 176.0, 199.0, '2026-07-03 11:07:37.318639', '2026-10-13 11:07:37.318639', 1, 2, 'a37a45f4-62e6-4f89-8168-877656b54fb2', 'FOOD51D', 'Flat discount on your order', 35.0, None, 299.0, '2026-07-07 11:07:37.318639', '2026-08-25 11:07:37.318639', 1, 2, 'f2fb4762-37fe-42ac-b117-02193c90fb28', 'FOOD97E', 'Festive season offer', None, 149.0, 0.0, '2026-06-28 11:07:37.318639', '2026-10-14 11:07:37.318639', 1, 1 ... 1900 parameters truncated ... '79e83a9b-7119-4a7a-93ce-bcd1e74e7692', 'FOOD83N', 'Weekend special discount', None, 151.0, 499.0, '2026-07-13 11:07:37.318639', '2026-09-19 11:07:37.318639', 1, 3, 'ae76002f-3149-4e72-abaf-58bf8676e143', 'FOOD58O', 'Percentage off on orders above minimum value', None, 58.0, 0.0, '2026-07-16 11:07:37.318639', '2026-08-30 11:07:37.318639', 1, 1, '39cc873a-7df7-4102-b34d-75b78801ed03', 'FOOD97P', 'New user welcome offer', 16.0, None, 0.0, '2026-06-30 11:07:37.318639', '2026-09-02 11:07:37.318639', 1, 3, '388c1997-6141-487c-bf8d-535687fcd643', 'FOOD67Q', 'Flat discount on your order', None, 142.0, 499.0, '2026-06-25 11:07:37.318639', '2026-08-24 11:07:37.318639', 1, 3, '29f86117-548c-4de5-8168-19f221034b9e', 'FOOD75R', 'New user welcome offer', None, 154.0, 0.0, '2026-06-23 11:07:37.318639', '2026-09-13 11:07:37.318639', 1, 1)]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
+def gen_coupons(n: int) -> list[Coupon]:
+    coupons = []
+    now = datetime.utcnow()
+    for i in range(n):
+        is_percent = random.random() > 0.5
+        prefix = COUPON_PREFIXES[i % len(COUPON_PREFIXES)]
+        coupons.append(
+            Coupon(
+                code=f"{prefix}{i:04d}",
+                description=random.choice(...),
+                ...
+            )
+        )
+    return coupons
