@@ -1,17 +1,119 @@
-(gpu_env) PS C:\Users\jasho\Downloads\alphagen-ai_2\alphagen-ai> uvicorn app.main:app --reload --port 8000
-INFO:     Will watch for changes in these directories: ['C:\\Users\\jasho\\Downloads\\alphagen-ai_2\\alphagen-ai']
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [39340] using WatchFiles
-INFO:     Started server process [30188]
-INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert/discussions?p=0 "HTTP/1.1 200 OK"
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert/commits/refs%2Fpr%2F29 "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert/commits/main "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: HEAD https://huggingface.co/ProsusAI/finbert/resolve/refs%2Fpr%2F29/model.safetensors.index.json "HTTP/1.1 404 Not Found"
-INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert/discussions?p=0 "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: HEAD https://huggingface.co/ProsusAI/finbert/resolve/refs%2Fpr%2F29/model.safetensors "HTTP/1.1 302 Found"
-INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/ProsusAI/finbert/commits/refs%2Fpr%2F29 "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: HEAD https://huggingface.co/ProsusAI/finbert/resolve/refs%2Fpr%2F29/model.safetensors.index.json "HTTP/1.1 404 Not Found"
-INFO:httpx:HTTP Request: HEAD https://huggingface.co/ProsusAI/finbert/resolve/refs%2Fpr%2F29/model.safetensors "HTTP/1.1 302 Found"
+"""FastAPI Gateway — the single entrypoint described at the top of the
+architecture diagram: Dashboard/Voice -> FastAPI Gateway -> Auth -> Guardrails
+-> Financial Manager Agent -> ... """
+import logging
+from pathlib import Path
+from fastapi import FastAPI, Depends, HTTPException
+from starlette.requests import Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.responses import Response, FileResponse
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+
+from app.schemas import AnalyzeRequest, WorkflowState
+from app.auth import authenticate_user, create_access_token, get_current_user, require_role
+from app.agents.financial_manager_agent import FinancialManagerAgent
+from app.agents.human_approval_agent import HumanApprovalAgent
+from app.agents.memory_agent import memory_agent
+from app.agents.rag_agent import RAGAgent
+from app.monitoring.metrics import metrics_response
+from app.monitoring.audit_log import AuditLogMiddleware
+
+logging.basicConfig(level=logging.INFO)
+
+limiter = Limiter(key_func=get_remote_address)
+app = FastAPI(
+    title="AlphaGen AI",
+    description="Autonomous multi-agent financial intelligence & trading platform (reference implementation)",
+    version="1.0.0",
+)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(AuditLogMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+financial_manager = FinancialManagerAgent()
+approval_agent = HumanApprovalAgent()
+rag_agent = RAGAgent()
+
+
+@app.on_event("startup")
+async def _log_routes():
+    logging.info("=" * 60)
+    logging.info("REGISTERED ROUTES:")
+    for route in app.routes:
+        methods = ",".join(route.methods) if hasattr(route, "methods") else "N/A"
+        logging.info(f"  {methods:20s} {route.path}")
+    logging.info("=" * 60)
+
+
+@app.get("/", include_in_schema=False)
+def dashboard():
+    """Serves the trading-desk web app at the site root."""
+    dashboard_path = Path(__file__).parent / "dashboard" / "index.html"
+    return FileResponse(dashboard_path)
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+@app.post("/auth/token")
+def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = authenticate_user(form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Incorrect username or password")
+    token = create_access_token({"sub": user["username"], "role": user["role"]})
+    return {"access_token": token, "token_type": "bearer"}
+
+
+@app.post("/analyze", response_model=WorkflowState)
+@limiter.limit("20/minute")
+def analyze(request: Request, body: AnalyzeRequest, user: dict = Depends(get_current_user)):
+    if body.mode == "live" and user["role"] != "trader":
+        raise HTTPException(status_code=403, detail="Live trading requires 'trader' role")
+    state = financial_manager.handle_request(body)
+    return state
+
+
+@app.post("/approve/{trace_id}")
+def approve(trace_id: str, user: dict = Depends(require_role("trader"))):
+    result = approval_agent.approve(trace_id)
+    if not result.get("approved"):
+        raise HTTPException(status_code=404, detail=result.get("reason", "Not found"))
+    return result
+
+
+@app.get("/portfolio/history")
+def portfolio_history(ticker: str | None = None, user: dict = Depends(get_current_user)):
+    return {"trades": memory_agent.get_trade_history(ticker)}
+
+
+@app.get("/portfolio/reflexion/{ticker}")
+def reflexion_history(ticker: str, user: dict = Depends(get_current_user)):
+    return {"ticker": ticker, "notes": memory_agent.get_reflexion_history(ticker)}
+
+
+@app.post("/rag/ingest")
+def ingest_document(payload: dict, user: dict = Depends(require_role("trader", "analyst"))):
+    """payload: {"text": "...", "metadata": {"ticker": "AAPL", "doc_type": "annual_report"}}"""
+    text = payload.get("text", "")
+    metadata = payload.get("metadata", {})
+    if not text:
+        raise HTTPException(status_code=400, detail="text is required")
+    return rag_agent.ingest_document(text, metadata)
+
+
+@app.get("/metrics")
+def metrics():
+    body, content_type = metrics_response()
+    return Response(content=body, media_type=content_type)
