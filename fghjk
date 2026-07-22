@@ -1,12 +1,80 @@
-COUPON_PREFIXES = ["FOOD", "SAVE", "MEAL", "TASTY", "CRAVE", "YUM", "BITE", "FEAST"]
+(gpu_env) PS C:\Users\jasho\Downloads\foodflow-ai\backend> uvicorn app.main:app --reload --port 8000
+INFO:     Will watch for changes in these directories: ['C:\\Users\\jasho\\Downloads\\foodflow-ai\\backend']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [66892] using WatchFiles
+Process SpawnProcess-1:
+Traceback (most recent call last):
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\networks.py", line 419, in import_email_validator
+    import email_validator
+ModuleNotFoundError: No module named 'email_validator'
 
+The above exception was the direct cause of the following exception:
 
-def gen_coupons(n: int) -> list[Coupon]:
-    coupons = []
-    now = datetime.utcnow()
-    for i in range(n):
-        is_percent = random.random() > 0.5
-        prefix = COUPON_PREFIXES[i % len(COUPON_PREFIXES)]
-        coupons.append(
-            Coupon(
-                code=f"{prefix}{i:04d}",
+Traceback (most recent call last):
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\multiprocessing\process.py", line 314, in _bootstrap
+    self.run()
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\asyncio\base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\server.py", line 69, in serve
+    await self._serve(sockets)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\server.py", line 76, in _serve
+    config.load()
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\config.py", line 434, in load
+    self.loaded_app = import_from_string(self.app)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\uvicorn\importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\importlib\__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "C:\Users\jasho\Downloads\foodflow-ai\backend\app\main.py", line 18, in <module>
+    from app.api.routes import auth, chat, resources
+  File "C:\Users\jasho\Downloads\foodflow-ai\backend\app\api\routes\auth.py", line 12, in <module>
+    from app.schemas.api_schemas import LoginRequest, SignupRequest, TokenResponse
+  File "C:\Users\jasho\Downloads\foodflow-ai\backend\app\schemas\api_schemas.py", line 11, in <module>
+    class SignupRequest(BaseModel):
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\_internal\_model_construction.py", line 224, in __new__
+    complete_model_class(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\_internal\_model_construction.py", line 577, in complete_model_class
+    schema = cls.__get_pydantic_core_schema__(cls, handler)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\main.py", line 671, in __get_pydantic_core_schema__
+    return handler(source)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\_internal\_schema_generation_shared.py", line 83, in __call__
+    schema = self._handler(source_type)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\_internal\_generate_schema.py", line 655, in generate_schema
+    schema = self._generate_schema_inner(obj)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\_internal\_generate_schema.py", line 924, in _generate_schema_inner
+    return self._model_schema(obj)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\_internal\_generate_schema.py", line 739, in _model_schema
+    {k: self._generate_md_field_schema(k, v, decorators) for k, v in fields.items()},
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\_internal\_generate_schema.py", line 739, in <dictcomp>
+    {k: self._generate_md_field_schema(k, v, decorators) for k, v in fields.items()},
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\_internal\_generate_schema.py", line 1115, in _generate_md_field_schema
+    common_field = self._common_field_schema(name, field_info, decorators)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\_internal\_generate_schema.py", line 1308, in _common_field_schema
+    schema = self._apply_annotations(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\_internal\_generate_schema.py", line 2107, in _apply_annotations
+    schema = get_inner_schema(source_type)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\_internal\_schema_generation_shared.py", line 83, in __call__
+    schema = self._handler(source_type)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\_internal\_generate_schema.py", line 2086, in inner_handler
+    from_property = self._generate_schema_from_property(obj, source_type)
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\_internal\_generate_schema.py", line 821, in _generate_schema_from_property
+    schema = get_schema(
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\networks.py", line 459, in __get_pydantic_core_schema__
+    import_email_validator()
+  File "C:\Users\jasho\anaconda3\envs\gpu_env\lib\site-packages\pydantic\networks.py", line 421, in import_email_validator
+    raise ImportError('email-validator is not installed, run `pip install pydantic[email]`') from e
+ImportError: email-validator is not installed, run `pip install pydantic[email]`
