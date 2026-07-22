@@ -1,8 +1,20 @@
-gpu_env) PS C:\Users\jasho\Downloads\foodflow-ai\backend> uvicorn app.main:app --reload --port 8001
-INFO:     Will watch for changes in these directories: ['C:\\Users\\jasho\\Downloads\\foodflow-ai\\backend']
-INFO:     Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [49980] using WatchFiles
-INFO:     Started server process [20700]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     127.0.0.1:63117 - "GET / HTTP/1.1" 404 Not Found
+(gpu_env) PS C:\Users\jasho\Downloads\foodflow-ai\frontend> npm run dev
+
+> foodflow-ai-frontend@1.0.0 dev
+> vite
+
+
+  VITE v5.4.21  ready in 706 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+Error: The following dependencies are imported but could not be resolved:
+
+  @/App (imported by C:/Users/jasho/Downloads/foodflow-ai/frontend/src/main.tsx)
+  @/index.css (imported by C:/Users/jasho/Downloads/foodflow-ai/frontend/src/main.tsx)
+
+Are they installed?
+    at file:///C:/Users/jasho/Downloads/foodflow-ai/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:50669:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///C:/Users/jasho/Downloads/foodflow-ai/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:50174:26
